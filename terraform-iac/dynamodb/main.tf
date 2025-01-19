@@ -9,4 +9,6 @@ resource "aws_dynamodb_table" "serverless_dynamodb_table" {
     name = var.partition-key
     type = "S"
   }
+
+  depends_on = [ var.lambda_function_name ]
 }

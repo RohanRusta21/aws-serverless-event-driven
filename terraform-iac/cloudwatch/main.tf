@@ -1,6 +1,7 @@
-resource "aws_cloudwatch_log_group" "example" {
+resource "aws_cloudwatch_log_group" "cloudwatch_log_group" {
   name              = "/aws/lambda/${var.lambda_function_name}"
-  retention_in_days = 14
+  retention_in_days = 1
+  depends_on = [ var.lambda_function_name ]
 }
 
 data "aws_iam_policy_document" "lambda_logging" {
@@ -11,6 +12,7 @@ data "aws_iam_policy_document" "lambda_logging" {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "logs:AWSLambdaBasicExecutionRole"
     ]
 
     resources = ["arn:aws:logs:*:*:*"]
@@ -25,6 +27,6 @@ resource "aws_iam_policy" "lambda_logging" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role       = aws_iam_role.iam_for_lambda.name
-  policy_arn = aws_iam_policy.lambda_logging.arn
+  role       = var.lambda_role_name //aws_iam_role.iam_for_lambda.name
+  policy_arn = var.lambda_policy_arn //aws_iam_policy.lambda_logging.arn
 }

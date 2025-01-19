@@ -14,7 +14,7 @@ export const handler = async (event, context) => {
       id: context.awsRequestId,
       timestamp: currentTimestamp,
       message: "Lambda function triggered",
-      message1: "trying to remove eventbridge from lambda",
+      newMessage: "New Message Column after module"
     },
   };
 

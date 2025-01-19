@@ -19,7 +19,8 @@ data "aws_iam_policy_document" "lambda_dynamodb_sqs" {
     effect = "Allow"
     actions = [
       "dynamodb:*",
-      "sqs:*"
+      "sqs:*",
+      "cloudwatch:*"
     ]
     resources = ["*"]
   }
@@ -38,8 +39,8 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_sqs_attachment" {
 
 data "archive_file" "lambda" {
   type        = "zip"
-  source_file = "my_lambda_code/index.mjs"
-  output_path = "my_lambda_code.zip"
+  source_file = "./my_lambda_code/index.mjs"
+  output_path = "./my_lambda_code.zip"
 }
 
 resource "aws_lambda_function" "my_serverless_lambda" {
@@ -52,17 +53,7 @@ resource "aws_lambda_function" "my_serverless_lambda" {
 
   environment {
     variables = {
-        TABLE_NAME = aws_dynamodb_table.serverless_dynamodb_table.name
+        TABLE_NAME = var.db_name
     }
   }
-
-  depends_on = [ aws_dynamodb_table.serverless_dynamodb_table ]
-}
-
-resource "aws_lambda_permission" "allow_eventbridge_to_invoke_lambda" {
-  statement_id  = "AllowExecutionFromEventBridge"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.my_serverless_lambda.function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.my_first_event_rule_for_lambda.arn
 }
